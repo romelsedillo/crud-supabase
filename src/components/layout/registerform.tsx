@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
@@ -17,6 +17,28 @@ const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [registering, setRegistering] = useState<boolean>(false);
   const router = useRouter();
+
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Error checking session: ", error);
+          return;
+        }
+
+        if (data?.session) {
+          // If a session exists, redirect to the homepage
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Unexpected error during session check: ", error);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const register = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
